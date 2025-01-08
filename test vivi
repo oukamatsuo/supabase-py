@@ -1,0 +1,79 @@
+
+CREATE TABLE users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  role VARCHAR(50) NOT NULL
+) ENGINE=InnoDB;
+
+
+CREATE TABLE accounts (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  account_name VARCHAR(255) NOT NULL,
+  account_type VARCHAR(50) NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+) ENGINE=InnoDB;
+
+
+CREATE TABLE transactions (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  date DATE NOT NULL,
+  description TEXT,
+  total_amount DECIMAL(15, 2) NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+) ENGINE=InnoDB;
+
+
+CREATE TABLE transaction_details (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  transaction_id INT NOT NULL,
+  account_id INT NOT NULL,
+  amount DECIMAL(15, 2) NOT NULL,
+  FOREIGN KEY (transaction_id) REFERENCES transactions(id),
+  FOREIGN KEY (account_id) REFERENCES accounts(id)
+) ENGINE=InnoDB;
+
+INSERT INTO users (name, email, password, role)
+VALUES
+  ('Taro', 'taro@example.com', 'hashed_pass_123', 'admin'),
+  ('Hanako', 'hanako@example.com', 'hashed_pass_456', 'user'),
+  ('Ken', 'ken@example.com', 'hashed_pass_789', 'user');
+
+INSERT INTO accounts (user_id, account_name, account_type)
+VALUES
+
+INSERT INTO transactions (user_id, date, description, total_amount)
+VALUES
+  (1, '2024-01-01', 'Started business capital', 100000.00), -- Taroの資本金投入
+  (1, '2024-01-05', 'Bank deposit', 50000.00),              -- Taroの入金
+  (2, '2024-01-03', 'Office supplies purchase', 3000.00),   -- Hanakoのオフィス用品購入
+  (3, '2024-01-10', 'Credit card payment', 15000.00);       -- Kenのクレカ支払い
+
+INSERT INTO transaction_details (transaction_id, account_id, amount)
+VALUES
+  -- Taro の取引1 (ID=1)
+  (1, 1, 100000.00),
+  -- Taro の取引2 (ID=2)
+  (2, 2, 50000.00),
+  -- Hanako の取引3 (ID=3)
+  (3, 5, 3000.00),
+  -- Ken の取引4 (ID=4)
+  (4, 7, 15000.00);
+
+  t.user_id,
+  t.date,
+  t.description,
+  td.id AS detail_id,
+  td.account_id,
+  td.amount
+FROM transactions AS t
+INNER JOIN transaction_details AS td
+  ON t.id = td.transaction_id;
+
+
+INNER JOIN transactions AS t ON u.id = t.user_id
+INNER JOIN transaction_details AS td ON t.id = td.transaction_id
+INNER JOIN accounts AS a ON td.account_id = a.id;
